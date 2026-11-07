@@ -34,6 +34,7 @@ import {
 import { useLogicalProjectEnvironments } from "../hooks/useLogicalProjectEnvironments";
 import { useStableCallback } from "../hooks/useStableCallback";
 import { useProjectScriptEditing } from "./chat/useProjectScriptEditing";
+import { todoProjectKey } from "../todoStore";
 import { RightPanelSurfaceContent } from "./chat/RightPanelSurfaceContent";
 import { usePendingThreadRequests } from "./chat/usePendingThreadRequests";
 import { isScratchProject } from "@t3tools/client-runtime/state/projects";
@@ -1841,6 +1842,13 @@ export default function ChatView(props: ChatViewProps) {
     }
   };
   const sendAppMessageStable = useStableCallback(sendAppMessage);
+  const addTodoToComposer = (text: string) => {
+    const inserted =
+      composerRef.current?.insertTextAtEnd(text, { ensureLeadingBoundary: true }) ?? false;
+    if (inserted) scheduleComposerFocus();
+    return inserted;
+  };
+  const addTodoToComposerStable = useStableCallback(addTodoToComposer);
   const queuedRunsControlRef = useRef<QueuedRunsControlHandle>(null);
 
   const {
@@ -2394,6 +2402,7 @@ export default function ChatView(props: ChatViewProps) {
     addFilesSurfaceStable,
     addPullRequestSurfaceStable,
     addPullRequestsSurfaceStable,
+    addTodosSurfaceStable,
     closePreviewPanelStable,
     copyRightPanelFilePathStable,
     createBrowserSurface,
@@ -3113,6 +3122,15 @@ export default function ChatView(props: ChatViewProps) {
         onOpenFile: openFileSurfaceStable,
         onPendingChange: handleFilePendingChangeStable,
       }}
+      todos={
+        activeProject
+          ? {
+              projectKey: todoProjectKey(activeThread.environmentId, activeThread.projectId),
+              onDelegate: isServerThread ? sendAppMessageStable : undefined,
+              onAddToComposer: addTodoToComposerStable,
+            }
+          : null
+      }
     />
   ) : null;
   const panelToggleControlProps = {
@@ -3894,6 +3912,7 @@ export default function ChatView(props: ChatViewProps) {
           onAddPullRequest={addPullRequestSurfaceStable}
           onAddPullRequests={addPullRequestsSurfaceStable}
           onAddDevice={addDeviceSurfaceStable}
+          onAddTodos={addTodosSurfaceStable}
           browserAvailable={canOperatePreview && browserAvailable}
           terminalAvailable={activeProject !== null && canOperateTerminal}
           diffAvailable={isServerThread && isGitRepo}
@@ -3901,6 +3920,7 @@ export default function ChatView(props: ChatViewProps) {
           pullRequestAvailable={pullRequestSurfaceAvailable}
           pullRequestsAvailable={pullRequestsSurfaceAvailable}
           deviceAvailable={activeThreadRef !== null}
+          todosAvailable={activeProject !== null}
         >
           {rightPanelContent}
         </ChatRightPanel>
