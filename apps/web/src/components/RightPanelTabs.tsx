@@ -33,7 +33,6 @@ import {
   FileDiff,
   Files,
   Globe2,
-  ListTodo,
   Plus,
   TerminalSquare,
 } from "lucide-react";
@@ -138,7 +137,6 @@ export interface RightPanelTabsProps {
   onAddPullRequest: () => void;
   onAddPullRequests: () => void;
   onAddDevice: () => void;
-  onAddTodos: () => void;
   browserAvailable: boolean;
   terminalAvailable: boolean;
   diffAvailable: boolean;
@@ -146,7 +144,6 @@ export interface RightPanelTabsProps {
   pullRequestAvailable: boolean;
   pullRequestsAvailable: boolean;
   deviceAvailable: boolean;
-  todosAvailable: boolean;
   pullRequestStatusSeeds?: Readonly<Record<string, PullRequestTabStatusSeed>>;
   children: ReactNode;
 }
@@ -173,7 +170,6 @@ const SURFACE_DISABLED_REASONS = {
   pullRequest: "This thread's branch has no pull request yet.",
   pullRequests: "No linked pull requests are available for this thread.",
   device: "Devices are only available from a thread.",
-  todos: "To-dos are only available when a project is open.",
 } as const;
 
 // Closed keepMounted popups must stop blocking shortcuts once their exit transition ends.
@@ -198,7 +194,6 @@ const SURFACE_UNAVAILABLE_HINTS = {
   pullRequest: "No pull request on this branch yet.",
   pullRequests: "No linked pull requests available.",
   device: "Available from a thread.",
-  todos: "Available when a project is open.",
 } as const;
 
 type TabContextMenuAction =
@@ -320,7 +315,6 @@ function RightPanelEmptyState(props: {
   onAddPullRequest: () => void;
   onAddPullRequests: () => void;
   onAddDevice: () => void;
-  onAddTodos: () => void;
   browserAvailable: boolean;
   terminalAvailable: boolean;
   diffAvailable: boolean;
@@ -328,7 +322,6 @@ function RightPanelEmptyState(props: {
   pullRequestAvailable: boolean;
   pullRequestsAvailable: boolean;
   deviceAvailable: boolean;
-  todosAvailable: boolean;
 }) {
   const [highlight, setHighlight] = useState(-1);
 
@@ -364,14 +357,6 @@ function RightPanelEmptyState(props: {
       available: props.diffAvailable,
       disabledReason: SURFACE_UNAVAILABLE_HINTS.diff,
       onClick: props.onAddDiff,
-    },
-    {
-      label: "To-dos",
-      icon: ListTodo,
-      shortcut: "O",
-      available: props.todosAvailable,
-      disabledReason: SURFACE_UNAVAILABLE_HINTS.todos,
-      onClick: props.onAddTodos,
     },
     {
       label: "Pull request",
@@ -580,8 +565,6 @@ function surfaceTitle(
       return `#${surface.number}`;
     case "pull-requests":
       return "Pull requests";
-    case "todos":
-      return "To-dos";
     case "device":
       return surface.title ?? surface.target?.name ?? "Device";
     case "preview": {
@@ -672,8 +655,6 @@ function SurfaceIcon({
       );
     case "pull-requests":
       return <PullRequestGlyph.link className="size-3 shrink-0" />;
-    case "todos":
-      return <ListTodo className="size-3 shrink-0" />;
     case "device":
       return surface.target?.platform === "ios" ? (
         <AppleIcon className="size-3 shrink-0" />
@@ -1080,14 +1061,6 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
       onClick: props.onAddDiff,
     },
     {
-      label: "To-dos",
-      icon: ListTodo,
-      shortcut: "O",
-      available: props.todosAvailable,
-      disabledReason: SURFACE_DISABLED_REASONS.todos,
-      onClick: props.onAddTodos,
-    },
-    {
       label: "Pull request",
       icon: PullRequestGlyph.pullRequest,
       shortcut: "P",
@@ -1484,7 +1457,6 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
             onAddPullRequest={props.onAddPullRequest}
             onAddPullRequests={props.onAddPullRequests}
             onAddDevice={props.onAddDevice}
-            onAddTodos={props.onAddTodos}
             browserAvailable={props.browserAvailable}
             terminalAvailable={props.terminalAvailable}
             diffAvailable={props.diffAvailable}
@@ -1492,7 +1464,6 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
             pullRequestAvailable={props.pullRequestAvailable}
             pullRequestsAvailable={props.pullRequestsAvailable}
             deviceAvailable={props.deviceAvailable}
-            todosAvailable={props.todosAvailable}
           />
         ) : (
           props.children

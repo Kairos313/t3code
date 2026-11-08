@@ -1,13 +1,21 @@
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 
-import { buildTodoDelegationPrompt, useTodoStore } from "./todoStore";
+import { buildTodoDelegationPrompt, DEFAULT_TODO_MENU_SETTINGS, useTodoStore } from "./todoStore";
 
 const KEY = "env-1:project-1";
 const items = () => useTodoStore.getState().byProjectKey[KEY] ?? [];
 
 describe("todoStore", () => {
   beforeEach(() => {
-    useTodoStore.setState({ byProjectKey: {} });
+    useTodoStore.setState({ byProjectKey: {}, settings: DEFAULT_TODO_MENU_SETTINGS });
+  });
+
+  it("changes one menu setting without resetting the others", () => {
+    useTodoStore.getState().setSettings({ showCompleted: false });
+    expect(useTodoStore.getState().settings).toEqual({
+      ...DEFAULT_TODO_MENU_SETTINGS,
+      showCompleted: false,
+    });
   });
 
   it("keeps a separate list per project and ignores blank titles", () => {

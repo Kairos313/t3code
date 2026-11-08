@@ -66,6 +66,7 @@ import {
   SquarePenIcon,
   TextSearchIcon,
 } from "lucide-react";
+import { useTodoMenuStore } from "../todoStore";
 import { requestThreadFindOpen } from "./chat/threadFindActionBus";
 import {
   useDeferredValue,
@@ -1344,19 +1345,16 @@ function OpenCommandPaletteDialog(props: {
     }
   }
 
-  if (activeThread !== null) {
-    const threadRef = scopeThreadRef(activeThread.environmentId, activeThread.id);
-    actionItems.push({
-      kind: "action",
-      value: "action:open-todos",
-      searchTerms: ["show to-dos", "todo", "to-do", "tasks", "checklist", "delegate"],
-      title: "Show to-dos",
-      icon: <ListTodoIcon className={ITEM_ICON_CLASS} />,
-      run: async () => {
-        useRightPanelStore.getState().open(threadRef, "todos");
-      },
-    });
-  }
+  actionItems.push({
+    kind: "action",
+    value: "action:open-todos",
+    searchTerms: ["show to-dos", "todo", "to-do", "tasks", "checklist", "delegate"],
+    title: "Show to-dos",
+    icon: <ListTodoIcon className={ITEM_ICON_CLASS} />,
+    run: async () => {
+      useTodoMenuStore.getState().setOpen(true);
+    },
+  });
 
   if (activeThread !== null) {
     const thread = activeThread;

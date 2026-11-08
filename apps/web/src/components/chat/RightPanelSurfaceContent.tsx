@@ -22,7 +22,6 @@ import { PullRequestDetailPanel } from "../pullRequest/PullRequestDetailPanel";
 import { PullRequestDetailGhost } from "../pullRequest/PullRequestGhosts";
 import { PullRequestsUnavailableState } from "../pullRequest/PullRequestsUnavailableState";
 import { ThreadPullRequestsPanel } from "../pullRequest/ThreadPullRequestsPanel";
-import { TodoPanel, type TodoPanelProps } from "../todos/TodoPanel";
 
 const PreviewPanel = lazy(() =>
   import("../preview/PreviewPanel").then((module) => ({ default: module.PreviewPanel })),
@@ -78,8 +77,6 @@ export function RightPanelSurfaceContent(props: {
   readonly terminal: RightPanelTerminalProps;
   readonly pullRequest: RightPanelPullRequestProps;
   readonly files: RightPanelFileProps;
-  /** Absent when the thread has no project to keep a list for. */
-  readonly todos: TodoPanelProps | null;
 }) {
   const { surface, threadRef, visible } = props;
   if (surface === null) return null;
@@ -170,8 +167,6 @@ export function RightPanelSurfaceContent(props: {
     }
     case "pull-requests":
       return <ThreadPullRequestsPanel threadRef={threadRef} />;
-    case "todos":
-      return props.todos ? <TodoPanel {...props.todos} /> : null;
     case "device":
       return (
         <Suspense fallback={null}>
